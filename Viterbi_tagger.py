@@ -3,7 +3,7 @@
 import sys
 
 helpMsg = '''
-	usage: $ python3 Viterbi_tagger.py training_file_name input_file_name
+	usage: $ python3 Viterbi_tagger.py training_file_name input_file_name output_file_name
 '''
 
 class transiProbMtx:
@@ -200,7 +200,7 @@ class ViterbiParser():
 		return taggedPairs
 
 def main(args):
-	if len(args) != 3:    #2 arguments for now
+	if len(args) != 4:    #3 arguments
 		return helpMsg
 
 	priorP = transiProbMtx()
@@ -224,13 +224,16 @@ def main(args):
 	viterbi_HMM_tagger = ViterbiParser(priorP, obsLikelihood)
 
 	inputF = open(args[2], 'r')
+	outputF = open(args[3], 'w')
 	tokenLs = []
 	for line in inputF:
 		if line != '\n':
 			tokenLs.append(line.strip())
 		else:
-			print(viterbi_HMM_tagger.tagTokens(tokenLs))
-			#print(tokenLs)
+			outputPairs = viterbi_HMM_tagger.tagTokens(tokenLs)
+			for pair in outputPairs:
+				outputF.write('\t'.join(pair)+'\n')
+			outputF.write('\n')
 			tokenLs = []
 
 	#print(priorP.lookup('VBG','JJ'))
@@ -239,7 +242,8 @@ def main(args):
 	#print(priorP)
 	#print(obsLikelihood)
 
-
+	inputF.close()
+	outputF.close()
 
 	return 0
 
