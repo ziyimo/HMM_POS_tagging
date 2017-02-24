@@ -47,6 +47,12 @@ def score (keyFileName, responseFileName):
 			correct = correct + 1
 		else:
 			incorrect = incorrect + 1
+                        #For debugging purposes.
+                        print "Answer Key:\n"
+                        print key[i-5:i+5]
+                        print "Your response:\n"
+                        print response[i-5:i+5]
+                        print "\n"
 	print str(correct) + " out of " + str(correct + incorrect) + " tags correct"
 	accuracy = 100.0 * correct / (correct + incorrect)
 	print "  accuracy: %f" % accuracy
