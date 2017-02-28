@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 #
 #SBATCH --verbose
 #SBATCH --job-name=HMM_POS_tagging
@@ -11,6 +11,6 @@
 module purge
 module load python3/intel/3.5.3
 
-./Viterbi_tagger.py WSJ_POS_CORPUS_FOR_STUDENTS/WSJ_02-21.pos WSJ_POS_CORPUS_FOR_STUDENTS/WSJ_24.words WSJ24TestRun2.txt
+./Viterbi_tagger.py WSJ_POS_CORPUS_FOR_STUDENTS/WSJ_02-21.pos WSJ_POS_CORPUS_FOR_STUDENTS/WSJ_24.words WSJ24TestRun3_OOV_Improved.txt
 
 exit

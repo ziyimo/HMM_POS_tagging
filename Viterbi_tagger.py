@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
 import sys
+import re
 
 helpMsg = '''
 	usage: $ python3 Viterbi_tagger.py training_file_name input_file_name output_file_name
 '''
+
+numAmount = re.compile(r'[0-9.,]*[0-9][0-9.,]*')
 
 class transiProbMtx:
 	"""transition probability matrix of Penn Treebank POS tags: P(t_i|t_i-1)"""
@@ -107,10 +110,38 @@ class obsLlhdMtx():
 		else:
 			for tag in self.tagDict:
 				OOV_cnt = 0
+				OOV_s_cnt = 0
+				OOV_Cap_cnt = 0
+				OOV_ed_cnt = 0
+				OOV_s_Cap_cnt = 0
+				OOV_ed_Cap_cnt = 0
+				OOV_num_cnt = 0
 				for word in self.tagDict[tag]:
 					if word in self.oneTimeW:
-						OOV_cnt += 1
+						print(word+'\t'+tag+'\n') # for debugging purposes
+						if word[0].isupper():
+							if word[-1] == 's':
+								OOV_s_Cap_cnt += 1
+							elif word[-2:] == 'ed':
+								OOV_ed_Cap_cnt += 1
+							else:
+								OOV_Cap_cnt += 1
+						elif word[-1] == 's':
+							OOV_s_cnt += 1
+						elif word[-2:] == 'ed':
+							OOV_ed_cnt += 1
+						elif numAmount.match(word):
+							OOV_num_cnt += 1
+						else:
+							OOV_cnt += 1
 				self.tagDict[tag]['$UNKNOWN$'] = OOV_cnt
+				self.tagDict[tag]['$END_IN_S$'] = OOV_s_cnt
+				self.tagDict[tag]['$END_IN_ED$'] = OOV_ed_cnt
+				self.tagDict[tag]['$FIRST_CAP$'] = OOV_Cap_cnt
+				self.tagDict[tag]['$CAP_N_S$'] = OOV_s_Cap_cnt
+				self.tagDict[tag]['$CAP_N_ED$'] = OOV_ed_Cap_cnt
+				self.tagDict[tag]['$NUMERICAL$'] = OOV_num_cnt
+
 
 			self.knownW = self.oneTimeW + self.moreTimeW
 			self.__OOVhandled = True
@@ -131,7 +162,21 @@ class obsLlhdMtx():
 			else:
 				return 0
 		else:
-			return self.tagDict[tag]['$UNKNOWN$']
+			if word[0].isupper():
+				if word[-1] == 's':
+					return self.tagDict[tag]['$CAP_N_S$']
+				elif word[-2:] == 'ed':
+					return self.tagDict[tag]['$CAP_N_ED$']
+				else:
+					return self.tagDict[tag]['$FIRST_CAP$']
+			elif word[-1] == 's':
+				return self.tagDict[tag]['$END_IN_S$']
+			elif word[-2:] == 'ed':
+				return self.tagDict[tag]['$END_IN_ED$']
+			elif numAmount.match(word):
+				return self.tagDict[tag]['$NUMERICAL$']
+			else:
+				return self.tagDict[tag]['$UNKNOWN$']
 
 	#def loadFromFile(self, fileObj)
 
@@ -220,6 +265,10 @@ def main(args):
 	priorP.calcProb()
 	obsLikelihood.handleOOV()
 	obsLikelihood.calcProb()
+
+	# For debugging only
+	#for word in obsLikelihood.oneTimeW:
+	#	print(word+"\n")
 
 	viterbi_HMM_tagger = ViterbiParser(priorP, obsLikelihood)
 
