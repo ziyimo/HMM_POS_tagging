@@ -11,6 +11,6 @@
 module purge
 module load python3/intel/3.5.3
 
-./Viterbi_tagger.py WSJ_POS_CORPUS_FOR_STUDENTS/WSJ_02-21.pos WSJ_POS_CORPUS_FOR_STUDENTS/WSJ_24.words WSJ24TestRun3_OOV_Improved.txt
+./Viterbi_tagger.py WSJ_POS_CORPUS_FOR_STUDENTS/WSJ_full.pos WSJ_POS_CORPUS_FOR_STUDENTS/WSJ_24.words WSJ24TestRun4.txt
 
 exit
