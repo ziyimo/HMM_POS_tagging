@@ -118,7 +118,7 @@ class obsLlhdMtx():
 				OOV_num_cnt = 0
 				for word in self.tagDict[tag]:
 					if word in self.oneTimeW:
-						print(word+'\t'+tag+'\n') # for debugging purposes
+						#print(word+'\t'+tag+'\n') # for debugging purposes
 						if word[0].isupper():
 							if word[-1] == 's':
 								OOV_s_Cap_cnt += 1
